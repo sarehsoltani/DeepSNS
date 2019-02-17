@@ -1,19 +1,25 @@
 from mne import io
 import numpy as np
+import matplotlib.pyplot as plt
 import pandas as pd
 import os
 
 import warnings
 warnings.filterwarnings("ignore")
 
-def get_class_positions(classes_dict, recording_types):
+def get_class_ranges(class_mapping, recording_types, recording_positions, recording_durations):
 
-    class_positions = {}
+    class_ranges = {}
 
-    for klass_name, klass_id in classes_dict.items():
-        class_positions[klass_name] = np.argwhere(recording_types == klass_id)
+    for klass_name, klass_id in class_mapping.items():
+        target_ids = np.argwhere(recording_types == klass_id)  
+        durations = recording_durations[target_ids]
+        starts = recording_positions[target_ids]
+        ends = np.add(starts, durations)
 
-    return class_positions
+        class_ranges[klass_name] = (starts, ends)
+
+    return class_ranges
 
 def clear_label_columns(column):
 
@@ -25,7 +31,7 @@ def clear_label_columns(column):
 root = './data'
 classes = ['img_lhand', 'img_rhand', 'img_bfeet', 'img_tongue', 'none']
 
-classes_dict = {
+class_mapping = {
     'img_lhand': 769, 
     'img_rhand': 770,
     'img_bfeet': 771,
@@ -52,25 +58,37 @@ recording_durations = recording_headers[4]
 # convert to dataframe
 recording_ts = gdf_file.to_data_frame()         # Recording time-series
 
-classes_ids = get_class_positions(classes_dict, recording_types)
+# print(recording_positions)
+class_ranges = get_class_ranges(class_mapping, recording_types, recording_positions, recording_durations)
 
-# Add label column to recording ts dataframe
 new_col = pd.DataFrame(0, index=np.arange(recording_ts.shape[0]), columns=['class_label'])
 
-for klass, klass_ids in classes_ids.items():
-    new_col.iloc[klass_ids] = klass
+# add new column to the existing recording
+recording_ts = recording_ts.join(new_col)
 
-new_col = clear_label_columns(new_col)
+for klass_name, klass_range in class_ranges.items():
 
-print("New labels column: ", new_col)
-# 
-# recording_ts['class_label'] = pd
-# for klass, klass_ids in classes_ids.items():
-# 
-    # print("Class {0} IDs: {1}".format(klass, klass_ids))
+    starts, ends = klass_range
+    for idx, start in enumerate(starts):
+        # Get all keys in the range
 
-# print("Recording time-series: ", recording_ts)
-# recording_idx = classes_ids['img_rhand'][0]
-# start_time = recording_positions[recording_idx]
-# end_time = start_time + recording_durations[recording_idx]
-# print("One sample of class 1 is from {} to {}".format(start_time, end_time))
+        keys_in_range = recording_ts[(recording_ts.index > int(starts[idx])) & (recording_ts.index < int(ends[idx]))].index.values
+    
+        recording_ts.loc[keys_in_range, 'class_label'] = klass_name
+
+
+# Fill all nans with 'none'
+
+recording_ts['class_label'].fillna('img_none', inplace=True)
+recording_ts['class_label'].replace(0.0, 'img_none', inplace=True)
+
+# recording_ts.to_csv('eeg_preped.csv')
+# print(recording_ts.describe())
+
+eeg0_ch = recording_ts[['EOG-right', 'EOG-central', 'EOG-left']]
+eeg0_ch = eeg0_ch.astype(float)
+eeg0_ch.plot()
+plt.show()
+# plt.show()
+# plot channel1
+# print(recording_ts.columns)
