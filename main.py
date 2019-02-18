@@ -66,6 +66,7 @@ t_generator = data.DataLoader(training_set, batch_size=config.BATCH_SIZE)
 
 validation_set = EEGData(partition['validation'], labels)
 v_generator = data.DataLoader(validation_set, batch_size=config.BATCH_SIZE)
+
 # classifier
 net = MLP()
 
@@ -73,5 +74,6 @@ net = MLP()
 optimizer = optim.Adam([p for p in net.parameters() if p.requires_grad])
 
 for epoch in range(config.NUM_EPOCHS):
-    eeg.train(model=net, data_loader=loader, optimizer=optimizer)
-    eeg.evaluate(model=net, data_loader=loader)
+    eeg.train(model=net, data_loader=t_generator, optimizer=optimizer, epoch=epoch)
+    eeg.evaluate(model=net, data_loader=v_generator, epoch=epoch)
+
