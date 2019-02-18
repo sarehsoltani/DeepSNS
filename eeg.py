@@ -9,7 +9,7 @@ class EEG:
     def train(self, model, data_loader, optimizer, epoch):  
         
         model.train()
-        for _, (data, labels) in enumerate(data_loader):
+        for step, (data, labels) in enumerate(data_loader):
 
             # zero all previous gradients
             optimizer.zero_grad()
@@ -26,6 +26,8 @@ class EEG:
 
             # TODO: compute accuracy
 
+            print('Train loss at step {}: {}'.format(step, loss))
+
 
     def evaluate(self, model, data_loader, epoch):
         model.eval()
@@ -41,3 +43,8 @@ class EEG:
                 loss = F.nll_loss(preds, labels)
 
                 # TODO: compute accuracy
+
+                print('Evaluation loss at step {}: {}'.format(step, loss))
+
+
+                
