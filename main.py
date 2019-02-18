@@ -8,6 +8,7 @@ import os
 from eeg import EEG
 from eeg_preprocessing import EEGPreprocessing as EEGPrep
 from model import MLP
+from data import EEGData
 import config
 
 import warnings
@@ -56,10 +57,15 @@ eeg = EEG()
 # prepare data loaders
 
 # IDs and labels
+partition = {}
+labels = []
 
 # generators
-training_set = 
+training_set = EEGData(partition['train'], labels)
+t_generator = data.DataLoader(training_set, batch_size=config.BATCH_SIZE)
 
+validation_set = EEGData(partition['validation'], labels)
+v_generator = data.DataLoader(validation_set, batch_size=config.BATCH_SIZE)
 # classifier
 net = MLP()
 
