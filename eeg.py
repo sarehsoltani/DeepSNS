@@ -34,7 +34,7 @@ class EEG:
 
         # disable gradients
         with torch.no_grad():
-            for _, (data, labels) in enumerate(data_loader):
+            for step, (data, labels) in enumerate(data_loader):
                 
                 # get model outputs
                 preds = model(data)
@@ -45,6 +45,3 @@ class EEG:
                 # TODO: compute accuracy
 
                 print('Evaluation loss at step {}: {}'.format(step, loss))
-
-
-                
