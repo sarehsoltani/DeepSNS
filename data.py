@@ -1,3 +1,4 @@
+import torch
 from torch.utils.data import Dataset
 from mne import io
 import numpy as np
@@ -71,7 +72,10 @@ class EEGData(Dataset):
     def __init__(self, list_ids, labels):
         self.list_ids = list_ids
         self.labels = labels
-        self.recording_ts_labeled = EEGDataUtils.prepare_eeg_csv()
+        recording_ts_labeled = EEGDataUtils.prepare_eeg_csv()
+
+        # drop labels
+        self.recording_ts = recording_ts_labeled.drop('class_label', axis=1)
 
     def __len__(self):
         """
@@ -85,12 +89,12 @@ class EEGData(Dataset):
         """
 
         ID = self.list_ids[index]
+        x = torch.tensor(self.recording_ts.loc[ID].to_numpy(), dtype=torch.float32)
 
-        # load ID from the desired csv file
-        x = self.recording_ts_labeled[ID]
-        y = self.labels[ID]
+        # TODO: convert labels to one-hot
+        y = torch.tensor(1).long()
 
-        return x, y
+        return x, y 
         
 
 

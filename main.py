@@ -1,4 +1,5 @@
 import torch.optim as optim
+from torchvision import transforms
 from torch.utils import data
 import matplotlib.pyplot as plt
 import pandas as pd
@@ -18,11 +19,10 @@ eeg = EEG()
 
 # prepare data loaders
 
-
 # IDs and labels
-partition = EEGDataUtils.prepare_partition(recording_ts_labeled, val_split=0.7)
+partition = EEGDataUtils.prepare_partition(recording_ts_labeled, val_split=0)
 
-all_labels = recording_ts_labeled['class_labels'].as_matrix()   # convert to numpy
+all_labels = recording_ts_labeled['class_label']
 
 # generators
 training_set = EEGData(partition['train'], all_labels)
