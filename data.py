@@ -17,11 +17,11 @@ class EEGDataUtils:
     def prepare_partition(eeg_csv, val_split=0.7):
         
         partition = {}
-        
+
         train, val = train_test_split(eeg_csv, test_size=val_split)
 
         partition['train'] = train.index.values
-        partition['val'] = val.index.values
+        partition['validation'] = val.index.values
 
         return partition
 
