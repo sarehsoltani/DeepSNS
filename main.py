@@ -3,7 +3,7 @@ from torchvision import transforms
 from torch.utils import data
 import matplotlib.pyplot as plt
 import pandas as pd
-from model import MLP
+from models.mlp import MLP
 from eeg import EEG
 from data import EEGData, EEGDataUtils
 import config
