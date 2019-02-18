@@ -1,10 +1,13 @@
+import torch.optim as optim
+from torch.utils import data
 from mne import io
 import numpy as np
 import matplotlib.pyplot as plt
 import pandas as pd
 import os
+from eeg import EEG
 from eeg_preprocessing import EEGPreprocessing as EEGPrep
-from eeg_classifier import EEGClassifier
+from model import MLP
 import config
 
 import warnings
@@ -45,5 +48,24 @@ recording_ts_labeled = EEGPrep.label_recording(recording_ts, class_ranges)
 recording_ts_labeled['class_label'].fillna('img_none', inplace=True)
 recording_ts_labeled['class_label'].replace(0.0, 'img_none', inplace=True)
 
-# EEG Class should be added it should contain prepare dataset and train and test functions
-# call train and test functions from main .py
+# prepare PyTorch datasets
+
+# initial EEG Experiment
+eeg = EEG()
+
+# prepare data loaders
+
+# IDs and labels
+
+# generators
+training_set = 
+
+# classifier
+net = MLP()
+
+# optimizer
+optimizer = optim.Adam([p for p in net.parameters() if p.requires_grad])
+
+for epoch in range(config.NUM_EPOCHS):
+    eeg.train(model=net, data_loader=loader, optimizer=optimizer)
+    eeg.evaluate(model=net, data_loader=loader)

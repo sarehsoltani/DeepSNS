@@ -4,10 +4,10 @@ import torch.nn.init as init
 import config
 
 
-class EEGClassifier(nn.Module):
+class MLP(nn.Module):
 
     def __init__(self):
-        super(EEGClassifier, self).__init__()
+        super(MLP, self).__init__()
         
         # specify a simple multilayer perceptron
         self.layer_1 = nn.Linear(in_features=config.NUM_CLASSIFIER_FEATURES,
