@@ -6,7 +6,7 @@ import pandas as pd
 from models.mlp import MLP
 from models.eegnet import EEGNet
 from eeg import EEG
-from data import EEGData, EEGDataUtils
+from data import EEGDataUtils, EEGData
 import config
 
 import warnings
@@ -14,6 +14,8 @@ warnings.filterwarnings("ignore")
 
 # prepare PyTorch datasets
 recording_ts_labeled = EEGDataUtils.prepare_eeg_csv()
+
+# recording_ts_labeled.to_csv('recording_ts_labeled.csv')
 
 # initial EEG Experiment
 eeg = EEG()
@@ -34,12 +36,12 @@ v_generator = data.DataLoader(validation_set, batch_size=config.BATCH_SIZE)
 
 # classifier
 net = MLP()
-net_cnn = EEGNet()
+# net_cnn = EEGNet()
 
 # optimizer
 optimizer = optim.Adam([p for p in net.parameters() if p.requires_grad])
 
 for epoch in range(config.NUM_EPOCHS):
-    eeg.train(model=net_cnn, data_loader=t_generator, optimizer=optimizer, epoch=epoch)
-    eeg.evaluate(model=net_cnn, data_loader=v_generator, epoch=epoch)
+    eeg.train(model=net, data_loader=t_generator, optimizer=optimizer, epoch=epoch)
+    eeg.evaluate(model=net, data_loader=v_generator, epoch=epoch)
 

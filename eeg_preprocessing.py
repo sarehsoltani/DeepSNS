@@ -35,7 +35,7 @@ class EEGPreprocessing():
                 # Get all keys in the range
 
                 keys_in_range = recording_ts[(recording_ts.index > int(starts[idx])) & (recording_ts.index < int(ends[idx]))].index.values
-            
+                
                 recording_ts.loc[keys_in_range, 'class_label'] = klass_name
 
         return recording_ts

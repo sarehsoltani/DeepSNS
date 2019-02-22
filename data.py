@@ -2,6 +2,7 @@ import torch
 from torch.utils.data import Dataset
 from mne import io
 import numpy as np
+import pandas as pd
 import os
 from sklearn.model_selection import train_test_split
 from eeg import EEG
@@ -13,6 +14,19 @@ class EEGDataUtils:
 
     def __init__(self):
         pass
+
+    @staticmethod
+    def one_hot(df, cols):
+        """
+        @param df pandas DataFrame
+        @param cols a list of columns to encode 
+        @return a DataFrame with one-hot encoding
+        """
+        for each in cols:
+            dummies = pd.get_dummies(df[each])
+            df = pd.concat([df, dummies], axis=1)
+
+        return df
 
     @staticmethod
     def prepare_partition(eeg_csv, val_split=0.7):
@@ -44,8 +58,9 @@ class EEGDataUtils:
         for file_name in os.listdir(root):
             bci_record_names.append(file_name)
 
+        print('Filename: {}'.format(bci_record_names[1]))
         # stim channel is required for gdf files
-        gdf_file = io.read_raw_edf(root + '/' + bci_record_names[3], stim_channel=1, preload=True)
+        gdf_file = io.read_raw_edf(root + '/' + bci_record_names[1], stim_channel=1, preload=True)
         recording_headers = io.find_edf_events(gdf_file)
         recording_positions = recording_headers[1]
         recording_types = recording_headers[2]
@@ -53,6 +68,12 @@ class EEGDataUtils:
 
         # convert to dataframe (recording time series)
         recording_ts = gdf_file.to_data_frame()
+
+        # fill nans with 0
+        recording_ts.fillna(0.0, inplace=True)
+
+        # normalize
+        recording_ts = (recording_ts - recording_ts.min()) / recording_ts.std()
 
         # extract class ranges
         class_ranges = EEGPrep.get_class_ranges(class_mapping, recording_types, recording_positions, recording_durations)
@@ -63,11 +84,18 @@ class EEGDataUtils:
         # fill all nans with 'none'
         recording_ts_labeled['class_label'].fillna('img_none', inplace=True)
         recording_ts_labeled['class_label'].replace(0.0, 'img_none', inplace=True)
+        
+        # convert to one-hot
+        recording_ts_oh = EEGDataUtils.one_hot(recording_ts_labeled, ['class_label'])
 
-        return recording_ts_labeled
+        print(recording_ts_oh.columns)
+
+        return recording_ts_oh
 
 
 class EEGData(Dataset):
+
+    classes = ['img_lhand', 'img_rhand', 'img_bfeet', 'img_tongue', 'img_none']
 
     def __init__(self, list_ids, labels):
         self.list_ids = list_ids
@@ -82,17 +110,22 @@ class EEGData(Dataset):
         Total number of samples
         """
         return len(self.list_ids)
-    
+
     def __getitem__(self, index):
         """
         Selects desired sample
         """
 
         ID = self.list_ids[index]
-        x = torch.tensor(self.recording_ts.loc[ID].to_numpy(), dtype=torch.float32)
 
-        # TODO: convert labels to one-hot
-        y = torch.tensor(1).long()
+        # drop bullshit
+        feature_cols = self.recording_ts.drop(self.classes, axis=1)
+        # feature_cols = feature_cols.drop('class_label', axis=1)
+
+        x = torch.tensor(feature_cols.loc[ID].to_numpy(), dtype=torch.float32)
+
+        y = self.recording_ts.loc[ID][self.classes].to_numpy()
+        y = torch.tensor(y).long()
 
         return x, y 
         
