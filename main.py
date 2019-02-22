@@ -28,14 +28,14 @@ partition = EEGDataUtils.prepare_partition(recording_ts_labeled, val_split=0)
 all_labels = recording_ts_labeled['class_label']
 
 # generators
-training_set = EEGData(partition['train'], all_labels)
+training_set = EEGData(partition['train'], all_labels, recording_ts_labeled)
 t_generator = data.DataLoader(training_set, batch_size=config.BATCH_SIZE)
 
-validation_set = EEGData(partition['validation'], all_labels)
+validation_set = EEGData(partition['validation'], all_labels, recording_ts_labeled)
 v_generator = data.DataLoader(validation_set, batch_size=config.BATCH_SIZE)
 
 # classifier
-net = MLP()
+net = EEGNet()
 # net_cnn = EEGNet()
 
 # optimizer

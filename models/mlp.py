@@ -31,7 +31,7 @@ class MLP(nn.Module):
         x = F.relu(x)
         x = self.layer_3(x)
 
-        x = F.softmax(x, dim=1)
+        # x = F.softmax(x, dim=1)
 
         return x
 

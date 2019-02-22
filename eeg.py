@@ -18,7 +18,7 @@ class EEG:
             preds = model(data)
 
             # compute error
-            loss = F.nll_loss(preds, labels)
+            loss = F.binary_cross_entropy_with_logits(preds, labels)
 
             # compute gradients and update model weights
             loss.backward()

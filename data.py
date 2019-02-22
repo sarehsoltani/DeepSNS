@@ -97,10 +97,9 @@ class EEGData(Dataset):
 
     classes = ['img_lhand', 'img_rhand', 'img_bfeet', 'img_tongue', 'img_none']
 
-    def __init__(self, list_ids, labels):
+    def __init__(self, list_ids, labels, recording_ts_labeled):
         self.list_ids = list_ids
         self.labels = labels
-        recording_ts_labeled = EEGDataUtils.prepare_eeg_csv()
 
         # drop labels
         self.recording_ts = recording_ts_labeled.drop('class_label', axis=1)
@@ -125,7 +124,7 @@ class EEGData(Dataset):
         x = torch.tensor(feature_cols.loc[ID].to_numpy(), dtype=torch.float32)
 
         y = self.recording_ts.loc[ID][self.classes].to_numpy()
-        y = torch.tensor(y).long()
+        y = torch.tensor(y).float()
 
         return x, y 
         
