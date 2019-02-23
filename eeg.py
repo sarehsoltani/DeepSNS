@@ -1,5 +1,6 @@
 import torch.nn.functional as F
 import torch
+from torch.autograd import Variable
 from tqdm import tqdm
 
 class EEG:
@@ -16,6 +17,15 @@ class EEG:
 
             # zero all previous gradients
             optimizer.zero_grad()
+
+            # variable options
+            var_params = {
+                'requires_grad': False
+            }
+
+            # transfer data to device
+            data = Variable(data.cuda(async=True), **var_params)
+            labels = Variable(labels.cuda(async=True), **var_params)
 
             # get model outputs
             preds = model(data)

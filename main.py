@@ -36,7 +36,9 @@ v_generator = data.DataLoader(validation_set, batch_size=config.BATCH_SIZE)
 
 # classifier
 net = MLP()
-# net_cnn = EEGNet()
+
+# move model and its buffers to GPU
+net.cuda()
 
 # optimizer
 optimizer = optim.Adam([p for p in net.parameters() if p.requires_grad])
