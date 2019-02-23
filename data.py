@@ -92,6 +92,23 @@ class EEGDataUtils:
 
         return recording_ts_oh
 
+    @staticmethod
+    def pd_to_np(df, cols_to_maintain):
+
+        nped = []
+
+        if cols_to_maintain == 'all':
+
+            for idx, row in df.iterrows():
+                nped.append(row)
+
+        else:
+            for idx, row in df.iterrows():
+                nped.append(row[cols_to_maintain])
+        
+        return np.asarray(nped, dtype=np.float32)
+
+
 
 class EEGData(Dataset):
 
@@ -107,6 +124,10 @@ class EEGData(Dataset):
         # drop classes
         self.feature_cols = self.recording_ts.drop(self.classes, axis=1)
 
+        # convert feature cols and recording ts to numpy array
+        self.labels = EEGDataUtils.pd_to_np(self.recording_ts, cols_to_maintain=self.classes)
+        self.feature_cols = EEGDataUtils.pd_to_np(self.feature_cols, cols_to_maintain='all')
+
     def __len__(self):
         """
         Total number of samples
@@ -119,9 +140,10 @@ class EEGData(Dataset):
         """
 
         ID = self.list_ids[index]
-
-        x = torch.tensor(self.feature_cols.loc[ID].to_numpy(), dtype=torch.float32)
-        y = torch.tensor(self.recording_ts.loc[ID][self.classes].to_numpy()).float()
+        print("ID ", ID)
+        
+        x = torch.tensor(self.feature_cols[ID], dtype=torch.float32)
+        y = torch.tensor(self.labels[ID]).float()
 
         return x, y 
         
