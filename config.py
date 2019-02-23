@@ -11,4 +11,4 @@ NUM_CLASSES = 5
 
 # training parameters
 NUM_EPOCHS = 10
-BATCH_SIZE = 32
+BATCH_SIZE = 1024
