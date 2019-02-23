@@ -35,7 +35,7 @@ validation_set = EEGData(partition['validation'], all_labels, recording_ts_label
 v_generator = data.DataLoader(validation_set, batch_size=config.BATCH_SIZE)
 
 # classifier
-net = EEGNet()
+net = MLP()
 # net_cnn = EEGNet()
 
 # optimizer

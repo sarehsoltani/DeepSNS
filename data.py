@@ -58,9 +58,9 @@ class EEGDataUtils:
         for file_name in os.listdir(root):
             bci_record_names.append(file_name)
 
-        print('Filename: {}'.format(bci_record_names[1]))
+        print('Filename: {}'.format(bci_record_names[0]))
         # stim channel is required for gdf files
-        gdf_file = io.read_raw_edf(root + '/' + bci_record_names[1], stim_channel=1, preload=True)
+        gdf_file = io.read_raw_edf(root + '/' + bci_record_names[0], stim_channel=1, preload=True)
         recording_headers = io.find_edf_events(gdf_file)
         recording_positions = recording_headers[1]
         recording_types = recording_headers[2]

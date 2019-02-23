@@ -1,5 +1,6 @@
 import torch.nn.functional as F
 import torch
+from tqdm import tqdm
 
 class EEG:
 
@@ -9,7 +10,9 @@ class EEG:
     def train(self, model, data_loader, optimizer, epoch):  
         
         model.train()
-        for step, (data, labels) in enumerate(data_loader):
+
+        tq = tqdm(data_loader, desc='{} E{}'.format('Train', str(epoch)))
+        for step, (data, labels) in enumerate(tq):
 
             # zero all previous gradients
             optimizer.zero_grad()
@@ -26,15 +29,16 @@ class EEG:
 
             # TODO: compute accuracy
 
-            print('Train loss at step {}: {}'.format(step, loss))
-
+            # update tqdm
+            tq.set_description(desc='Loss {}'.format(loss))
 
     def evaluate(self, model, data_loader, epoch):
         model.eval()
 
         # disable gradients
         with torch.no_grad():
-            for step, (data, labels) in enumerate(data_loader):
+            tq = tqdm(data_loader, desc='{} E{}'.format('Validation', str(epoch)))
+            for step, (data, labels) in enumerate(tq):
                 
                 # get model outputs
                 preds = model(data)
@@ -44,4 +48,5 @@ class EEG:
 
                 # TODO: compute accuracy
 
-                print('Evaluation loss at step {}: {}'.format(step, loss))
+                # update tqdm
+                tq.set_description(desc='Loss {}'.format(loss))
