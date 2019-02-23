@@ -6,12 +6,11 @@ from tqdm import tqdm
 class EEG:
 
     def __init__(self):
-        
+
         self.train_iters = 0
         self.val_iters = 0
 
-    def train(self, model, data_loader, optimizer, writer, epoch):  
-        
+    def train(self, model, data_loader, optimizer, writer, epoch):
         model.train()
 
         tq = tqdm(data_loader, desc='{} E{}'.format('Train', str(epoch)))
@@ -48,7 +47,7 @@ class EEG:
             tq.set_description(desc='Loss {}'.format(loss))
 
             # write scalar
-            writer.add_scalar('/loss', loss.data.item(), train_iters)
+            writer.add_scalar('/loss', loss.data.item(), self.train_iters)
 
             
     def evaluate(self, model, data_loader, writer, epoch):
@@ -56,6 +55,7 @@ class EEG:
 
         # disable gradients
         with torch.no_grad():
+
             tq = tqdm(data_loader, desc='{} E{}'.format('Validation', str(epoch)))
             for step, (data, labels) in enumerate(tq):
                 
@@ -74,4 +74,4 @@ class EEG:
                 tq.set_description(desc='Loss {}'.format(loss))
 
                 # write scalar
-                writer.add_scalar('/loss', loss.data.item(), val_iters)
+                writer.add_scalar('/loss', loss.data.item(), self.val_iters)
