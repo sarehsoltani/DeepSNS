@@ -3,6 +3,7 @@ from torchvision import transforms
 from torch.utils import data
 import matplotlib.pyplot as plt
 import pandas as pd
+from tensorboardX import SummaryWriter
 from models.mlp import MLP
 from models.eegnet import EEGNet
 from eeg import EEG
@@ -34,6 +35,10 @@ t_generator = data.DataLoader(training_set, batch_size=config.BATCH_SIZE)
 validation_set = EEGData(partition['validation'], all_labels, recording_ts_labeled)
 v_generator = data.DataLoader(validation_set, batch_size=config.BATCH_SIZE)
 
+# Tensorboard writers
+train_writer = SummaryWriter(config.visualization_dir + '/' + 'train')
+val_writer = SummaryWriter(config.visualization_dir + '/' + 'val')
+
 # classifier
 net = MLP()
 
@@ -44,6 +49,6 @@ net.cuda()
 optimizer = optim.Adam([p for p in net.parameters() if p.requires_grad])
 
 for epoch in range(config.NUM_EPOCHS):
-    eeg.train(model=net, data_loader=t_generator, optimizer=optimizer, epoch=epoch)
-    eeg.evaluate(model=net, data_loader=v_generator, epoch=epoch)
+    eeg.train(model=net, data_loader=t_generator, optimizer=optimizer, writer=train_writer, epoch=epoch)
+    eeg.evaluate(model=net, data_loader=v_generator, writer=val_writer, epoch=epoch)
 

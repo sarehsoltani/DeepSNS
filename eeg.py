@@ -6,14 +6,19 @@ from tqdm import tqdm
 class EEG:
 
     def __init__(self):
-        pass
+        
+        self.train_iters = 0
+        self.val_iters = 0
 
-    def train(self, model, data_loader, optimizer, epoch):  
+    def train(self, model, data_loader, optimizer, writer, epoch):  
         
         model.train()
 
         tq = tqdm(data_loader, desc='{} E{}'.format('Train', str(epoch)))
         for step, (data, labels) in enumerate(tq):
+            
+            # update train iters
+            self.train_iters += 1
 
             # zero all previous gradients
             optimizer.zero_grad()
@@ -42,7 +47,11 @@ class EEG:
             # update tqdm
             tq.set_description(desc='Loss {}'.format(loss))
 
-    def evaluate(self, model, data_loader, epoch):
+            # write scalar
+            writer.add_scalar('/loss', loss.data.item(), train_iters)
+
+            
+    def evaluate(self, model, data_loader, writer, epoch):
         model.eval()
 
         # disable gradients
@@ -50,6 +59,9 @@ class EEG:
             tq = tqdm(data_loader, desc='{} E{}'.format('Validation', str(epoch)))
             for step, (data, labels) in enumerate(tq):
                 
+                # update train iters
+                self.val_iters += 1
+
                 # get model outputs
                 preds = model(data)
 
@@ -60,3 +72,6 @@ class EEG:
 
                 # update tqdm
                 tq.set_description(desc='Loss {}'.format(loss))
+
+                # write scalar
+                writer.add_scalar('/loss', loss.data.item(), val_iters)
