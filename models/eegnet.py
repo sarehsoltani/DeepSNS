@@ -34,7 +34,7 @@ class EEGNet(nn.Module):
         x_shape = x.size()
         target_shape = int(x_shape[1] / 2)
         num_channels = 1
-        x = x.view(int(x_shape[0]), target_shape, target_shape, num_channels)
+        x = x.view(int(x_shape[0]), target_shape, 2, num_channels)
 
         # Layer 1
         x = F.elu(self.conv1(x))
