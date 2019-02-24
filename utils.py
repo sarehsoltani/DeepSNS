@@ -1,5 +1,5 @@
 class Tracker:
-""" Keep track of results over time, while having access to monitors to display information about them. """
+    """ Keep track of results over time, while having access to monitors to display information about them. """
 
     def __init__(self):
         self.data = {}

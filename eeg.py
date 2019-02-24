@@ -118,22 +118,17 @@ class EEG:
         predicted = predicted.cpu().detach().numpy()
         Y = Y.cpu().detach().numpy()
 
-        for param in params:
-            try:
-                if param == 'acc':
-                    results.append(accuracy_score(Y, np.round(predicted)))
-                if param == "auc":
-                    results.append(roc_auc_score(Y, predicted))
-                if param == "recall":
-                    results.append(recall_score(Y, np.round(predicted)))
-                if param == "precision":
-                    results.append(precision_score(Y, np.round(predicted)))
-                if param == "fmeasure":
-                    precision = precision_score(Y, np.round(predicted))
-                    recall = recall_score(Y, np.round(predicted))
-                    results.append(2*precision*recall/ (precision+recall))
-
-            except Exception as ec:
-                pass
+        if param == 'acc':
+            results.append(accuracy_score(Y, np.round(predicted)))
+        if param == "auc":
+            results.append(roc_auc_score(Y, predicted))
+        if param == "recall":
+            results.append(recall_score(Y, np.round(predicted)))
+        if param == "precision":
+            results.append(precision_score(Y, np.round(predicted)))
+        if param == "fmeasure":
+            precision = precision_score(Y, np.round(predicted))
+            recall = recall_score(Y, np.round(predicted))
+            results.append(2*precision*recall/ (precision+recall))
 
         return results
