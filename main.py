@@ -8,6 +8,7 @@ from tensorboardX import SummaryWriter
 from models.mlp import MLP
 from models.eegnet import EEGNet
 from eeg import EEG
+import utils as utils
 from data import EEGDataUtils, EEGData
 import config
 
@@ -46,10 +47,12 @@ net = nn.DataParallel(MLP())
 # move model and its buffers to GPU
 net.cuda()
 
+tracker = utils.Tracker()
+
 # optimizer
 optimizer = optim.Adam([p for p in net.parameters() if p.requires_grad])
 
 for epoch in range(config.NUM_EPOCHS):
-    eeg.train(model=net, data_loader=t_generator, optimizer=optimizer, writer=train_writer, epoch=epoch)
-    eeg.validate(model=net, data_loader=v_generator, writer=val_writer, epoch=epoch)
+    eeg.train(model=net, data_loader=t_generator, tracker=tracker, optimizer=optimizer, writer=train_writer, epoch=epoch)
+    eeg.validate(model=net, data_loader=v_generator, tracker=tracker, writer=val_writer, epoch=epoch)
 

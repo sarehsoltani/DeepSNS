@@ -12,9 +12,14 @@ class EEG:
         self.train_iters = 0
         self.val_iters = 0
 
-    def train(self, model, data_loader, optimizer, writer, epoch):
+    def train(self, model, data_loader, tracker, optimizer, writer, epoch):
         model.train()
         
+        tracker_class, tracker_params = tracker.MovingMeanMonitor, {'momentum': 0.99}
+
+        loss_tracker = tracker.track('{}_loss'.format('train'), tracker_class(**tracker_params))
+        acc_tracker = tracker.track('{}_acc'.format('train'), tracker_class(**tracker_params))
+
         accs = []
         lsss = []
 
@@ -51,24 +56,24 @@ class EEG:
 
             # TODO: compute accuracy
             batch_score = float(self.evaluate(predicted=preds, Y=labels, params=["auc"])[0])
-
-            # add new scores and losses to the list
-            accs.append(batch_score)
-            lsss.append(loss.data.item())
-
-            mean_loss = sum(lsss) / float(len(lsss))
-            mean_acc = sum(accs) / float(len(accs))
+            loss_tracker.append(loss.data.item())
+            acc_tracker.append(batch_score)
 
             # update tqdm
-            tq.set_description(desc='| Loss: {}, AUC: {} |'.format(mean_loss, mean_acc))
+            tq.set_description(desc='| Loss: {}, AUC: {} |'.format(loss_tracker.mean.value, acc_tracker.mean.value))
 
             # write scalar
-            writer.add_scalar('/loss', mean_loss, self.train_iters)
-            writer.add_scalar('/auc-score', mean_acc, self.train_iters)
+            writer.add_scalar('/loss', loss_tracker.mean.value, self.train_iters)
+            writer.add_scalar('/auc-score', acc_tracker.mean.value, self.train_iters)
 
             
-    def validate(self, model, data_loader, writer, epoch):
+    def validate(self, model, data_loader, tracker, writer, epoch):
         model.eval()
+
+        tracker_class, tracker_params = tracker.MeanMonitor, {}
+
+        loss_tracker = tracker.track('{}_loss'.format('validation'), tracker_class(**tracker_params))
+        acc_tracker = tracker.track('{}_acc'.format('validation'), tracker_class(**tracker_params))
 
         # disable gradients
         with torch.no_grad():
@@ -94,20 +99,17 @@ class EEG:
                 loss = F.binary_cross_entropy_with_logits(preds, labels)
 
                 # TODO: compute accuracy
-                score = float(self.evaluate(predicted=preds, Y=labels, params=["auc"])[0])
+                batch_score = float(self.evaluate(predicted=preds, Y=labels, params=["auc"])[0])
 
-                accs.append(score)
-                lsss.append(loss.data.item())
-
-                mean_acc = sum(accs) / len(accs)
-                mean_loss =  sum(lsss) / len(lsss)
+                loss_tracker.append(loss.data.item())
+                acc_tracker.append(batch_score)
 
                 # update tqdm
-                tq.set_description(desc='| Loss: {}, Accuracy: {} |'.format(mean_loss, mean_acc))
+                tq.set_description(desc='| Loss: {}, AUC: {} |'.format(loss_tracker.mean.value, acc_tracker.mean.value))
 
                 # write scalar
-                writer.add_scalar('/loss', mean_acc, self.val_iters)
-                writer.add_scalar('/auc-score', mean_loss, self.val_iters)
+                writer.add_scalar('/loss', acc_tracker.mean.value, self.val_iters)
+                writer.add_scalar('/auc-score', loss_tracker.mean.value, self.val_iters)
 
 
     def evaluate(self, predicted, Y, params = ["auc"]):
