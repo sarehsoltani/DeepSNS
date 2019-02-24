@@ -1,6 +1,7 @@
 import torch.optim as optim
 from torchvision import transforms
 from torch.utils import data
+import torch.nn as nn
 import matplotlib.pyplot as plt
 import pandas as pd
 from tensorboardX import SummaryWriter
@@ -24,7 +25,7 @@ eeg = EEG()
 # prepare data loaders
 
 # IDs and labels
-partition = EEGDataUtils.prepare_partition(recording_ts_labeled, val_split=0)
+partition = EEGDataUtils.prepare_partition(recording_ts_labeled, val_split=0.3)
 
 all_labels = recording_ts_labeled['class_label']
 
@@ -40,7 +41,7 @@ train_writer = SummaryWriter(config.visualization_dir + '/' + 'train')
 val_writer = SummaryWriter(config.visualization_dir + '/' + 'val')
 
 # classifier
-net = EEGNet()
+net = nn.DataParallel(EEGNet())
 
 # move model and its buffers to GPU
 net.cuda()
@@ -49,6 +50,6 @@ net.cuda()
 optimizer = optim.Adam([p for p in net.parameters() if p.requires_grad])
 
 for epoch in range(config.NUM_EPOCHS):
-    # eeg.train(model=net, data_loader=t_generator, optimizer=optimizer, writer=train_writer, epoch=epoch)
-    eeg.validate(model=net, data_loader=t_generator, writer=val_writer, epoch=epoch)
+    eeg.train(model=net, data_loader=t_generator, optimizer=optimizer, writer=train_writer, epoch=epoch)
+    eeg.validate(model=net, data_loader=v_generator, writer=val_writer, epoch=epoch)
 
