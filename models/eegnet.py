@@ -34,7 +34,7 @@ class EEGNet(nn.Module):
         
         # reshape
         width = int(math.sqrt(config.BATCH_SIZE))
-        x = x.view(1, 1, width, width)
+        x = x.view(22, 1, width, width)
 
         # Layer 1
         x = F.elu(self.conv1(x))
