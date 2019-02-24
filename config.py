@@ -11,7 +11,7 @@ NUM_CLASSES = 5
 
 # training parameters
 NUM_EPOCHS = 10
-BATCH_SIZE = 1024
+BATCH_SIZE = 16
 
 # path for visualization
 visualization_dir = './visualization'
