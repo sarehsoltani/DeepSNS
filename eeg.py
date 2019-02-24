@@ -14,6 +14,9 @@ class EEG:
 
     def train(self, model, data_loader, optimizer, writer, epoch):
         model.train()
+        
+        accs = []
+        lsss = []
 
         tq = tqdm(data_loader, desc='{} E{}'.format('Train', str(epoch)))
         for step, (data, labels) in enumerate(tq):
@@ -47,14 +50,21 @@ class EEG:
             optimizer.step()
 
             # TODO: compute accuracy
-            score = float(self.evaluate(predicted=preds, Y=labels, params=["auc"])[0])
+            batch_score = float(self.evaluate(predicted=preds, Y=labels, params=["auc"])[0])
+
+            # add new scores and losses to the list
+            accs.append(batch_score)
+            lsss.append(loss.data.item())
+
+            mean_loss = sum(lsss) / float(len(lsss))
+            mean_acc = sum(accs) / float(len(accs))
 
             # update tqdm
-            tq.set_description(desc='| Loss: {}, AUC: {} |'.format(loss, score))
+            tq.set_description(desc='| Loss: {}, AUC: {} |'.format(mean_loss, mean_acc))
 
             # write scalar
-            writer.add_scalar('/loss', loss.data.item(), self.train_iters)
-            writer.add_scalar('/auc-score', score, self.train_iters)
+            writer.add_scalar('/loss', mean_loss, self.train_iters)
+            writer.add_scalar('/auc-score', mean_acc, self.train_iters)
 
             
     def validate(self, model, data_loader, writer, epoch):
@@ -62,6 +72,9 @@ class EEG:
 
         # disable gradients
         with torch.no_grad():
+
+            accs = []
+            lsss = []
 
             tq = tqdm(data_loader, desc='{} E{}'.format('Validation', str(epoch)))
             for step, (data, labels) in enumerate(tq):
@@ -78,12 +91,18 @@ class EEG:
                 # TODO: compute accuracy
                 score = float(self.evaluate(predicted=preds, Y=labels)[0])
 
+                accs.append(score)
+                lsss.append(loss.data.item())
+
+                mean_acc = sum(accs) / len(accs)
+                mean_loss =  sum(lsss) / len(lsss)
+
                 # update tqdm
-                tq.set_description(desc='| Loss: {}, Accuracy: {} |'.format(loss, score))
+                tq.set_description(desc='| Loss: {}, Accuracy: {} |'.format(mean_loss, mean_acc))
 
                 # write scalar
-                writer.add_scalar('/loss', loss.data.item(), self.val_iters)
-                writer.add_scalar('/auc-score', score, self.val_iters)
+                writer.add_scalar('/loss', mean_acc, self.val_iters)
+                writer.add_scalar('/auc-score', mean_loss, self.val_iters)
 
 
     def evaluate(self, predicted, Y, params = ["auc"]):
