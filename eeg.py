@@ -94,7 +94,7 @@ class EEG:
                 loss = F.binary_cross_entropy_with_logits(preds, labels)
 
                 # TODO: compute accuracy
-                score = float(self.evaluate(predicted=preds, Y=labels)[0])
+                score = float(self.evaluate(predicted=preds, Y=labels, params=["auc"])[0])
 
                 accs.append(score)
                 lsss.append(loss.data.item())

@@ -41,7 +41,7 @@ train_writer = SummaryWriter(config.visualization_dir + '/' + 'train')
 val_writer = SummaryWriter(config.visualization_dir + '/' + 'val')
 
 # classifier
-net = nn.DataParallel(EEGNet())
+net = nn.DataParallel(MLP())
 
 # move model and its buffers to GPU
 net.cuda()

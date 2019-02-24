@@ -57,7 +57,7 @@ class EEGDataUtils:
         for file_name in os.listdir(root):
             bci_record_names.append(file_name)
 
-        print('Filename: {}'.format(bci_record_names[0]))
+        # print('Filename: {}'.format(bci_record_names[0]))
         # stim channel is required for gdf files
         gdf_file = io.read_raw_edf(root + '/' + bci_record_names[0], stim_channel=1, preload=True)
         recording_headers = io.find_edf_events(gdf_file)
@@ -91,8 +91,6 @@ class EEGDataUtils:
         # convert to one-hot
         recording_ts_oh = EEGDataUtils.one_hot(recording_ts_labeled, ['class_label'])
 
-        print(recording_ts_oh.columns)
-
         return recording_ts_oh
 
 
@@ -123,11 +121,11 @@ class EEGData(Dataset):
 
         ID = self.list_ids[index]
 
-        x = torch.tensor(np.random.rand(1, 120, 64).astype('float32'))
-        y = np.round(np.random.rand(1).astype('float32'))
+        # x = torch.tensor(np.random.rand(1, 120, 64).astype('float32'))
+        # y = np.round(np.random.rand(1).astype('float32'))
 
-        # x = torch.tensor(self.feature_cols.loc[ID].to_numpy(), dtype=torch.float32)
-        # y = torch.tensor(self.recording_ts.loc[ID][self.classes].to_numpy()).float()
+        x = torch.tensor(self.feature_cols.loc[ID].to_numpy(), dtype=torch.float32)
+        y = torch.tensor(self.recording_ts.loc[ID][self.classes].to_numpy()).float()
 
         return x, y 
         
