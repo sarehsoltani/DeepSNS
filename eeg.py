@@ -47,13 +47,14 @@ class EEG:
             optimizer.step()
 
             # TODO: compute accuracy
-            score = score = int(self.evaluate(predicted=preds, Y=labels))
+            score = float(self.evaluate(predicted=preds, Y=labels, params=["auc"])[0])
 
             # update tqdm
-            tq.set_description(desc='Loss: {}, Accuracy: {}'.format(loss, score))
+            tq.set_description(desc='| Loss: {}, AUC: {} |'.format(loss, score))
 
             # write scalar
             writer.add_scalar('/loss', loss.data.item(), self.train_iters)
+            writer.add_scalar('/auc-score', score, self.train_iters)
 
             
     def validate(self, model, data_loader, writer, epoch):
@@ -75,19 +76,22 @@ class EEG:
                 loss = F.nll_loss(preds, labels)
 
                 # TODO: compute accuracy
-                score = int(self.evaluate(predicted=preds, Y=labels))
+                score = float(self.evaluate(predicted=preds, Y=labels)[0])
 
                 # update tqdm
-                tq.set_description(desc='Loss: {}, Accuracy: {}'.format(loss, score))
+                tq.set_description(desc='| Loss: {}, Accuracy: {} |'.format(loss, score))
 
                 # write scalar
                 writer.add_scalar('/loss', loss.data.item(), self.val_iters)
+                writer.add_scalar('/auc-score', score, self.val_iters)
 
 
-    def evaluate(self, predicted, Y, params = ["acc"]):
+    def evaluate(self, predicted, Y, params = ["auc"]):
         
         results = []
-        
+        predicted = predicted.cpu().detach().numpy()
+        Y = Y.cpu().detach().numpy()
+
         for param in params:
             if param == 'acc':
                 results.append(accuracy_score(Y, np.round(predicted)))
