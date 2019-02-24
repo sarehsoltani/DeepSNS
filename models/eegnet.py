@@ -1,5 +1,7 @@
 import torch.nn as nn
 import torch.nn.functional as F
+import math
+import config
 
 class EEGNet(nn.Module):
     def __init__(self):
@@ -30,13 +32,9 @@ class EEGNet(nn.Module):
 
     def forward(self, x):
         
-        # reshape input 
-        x_shape = x.size()
-        target_shape = int(x_shape[1] / 2)
-        num_channels = 1
-
-        # input shape is (num_batches, num_channels, width, height)
-        x = x.view(int(x_shape[0]), num_channels, target_shape, 2)
+        # reshape
+        width = int(math.sqrt(config.BATCH_SIZE))
+        x = x.view(1, 1, width, width)
 
         # Layer 1
         x = F.elu(self.conv1(x))
