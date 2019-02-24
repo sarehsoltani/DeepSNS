@@ -71,7 +71,7 @@ class EEGDataUtils:
 
         # drop EOG cols
         eog_cols = ['EOG-left', 'EOG-central', 'EOG-right']
-        recording_ts.drop(eog_cols, inplace=True)
+        recording_ts.drop(eog_cols, axis=1, inplace=True)
 
         # fill nans with 0
         recording_ts.fillna(0.0, inplace=True)
