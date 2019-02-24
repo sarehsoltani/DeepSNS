@@ -112,7 +112,7 @@ class EEG:
                 writer.add_scalar('/auc-score', loss_tracker.mean.value, self.val_iters)
 
 
-    def evaluate(self, predicted, Y, params = ["auc"]):
+    def evaluate(self, predicted, Y, param = ["auc"]):
         
         results = []
         predicted = predicted.cpu().detach().numpy()
