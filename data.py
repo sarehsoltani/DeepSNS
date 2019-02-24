@@ -5,7 +5,7 @@ import numpy as np
 import pandas as pd
 import os
 from sklearn.model_selection import train_test_split
-from eeg import EEG
+# from eeg import EEG
 from eeg_preprocessing import EEGPreprocessing as EEGPrep
 import os
 
@@ -69,6 +69,10 @@ class EEGDataUtils:
         # convert to dataframe (recording time series)
         recording_ts = gdf_file.to_data_frame()
 
+        # drop EOG cols
+        eog_cols = ['EOG-left', 'EOG-central', 'EOG-right']
+        recording_ts.drop(eog_cols, inplace=True)
+
         # fill nans with 0
         recording_ts.fillna(0.0, inplace=True)
 
@@ -125,5 +129,3 @@ class EEGData(Dataset):
 
         return x, y 
         
-
-
