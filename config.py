@@ -1,6 +1,6 @@
 
 # EEG signal features (channels)
-NUM_CLASSIFIER_FEATURES = 25
+NUM_CLASSIFIER_FEATURES = 22
 
 # classifier hyper-parameters
 NUM_L1_UNITS = 50
