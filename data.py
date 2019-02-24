@@ -123,7 +123,7 @@ class EEGData(Dataset):
 
         ID = self.list_ids[index]
 
-        x = torch.tensor(np.random.rand(1, 1, 120, 64).astype('float32'))
+        x = torch.tensor(np.random.rand(1, 120, 64).astype('float32'))
         y = np.round(np.random.rand(1).astype('float32'))
 
         # x = torch.tensor(self.feature_cols.loc[ID].to_numpy(), dtype=torch.float32)

@@ -30,8 +30,11 @@ class EEG:
             }
 
             # transfer data to device
-            data = Variable(data.cuda(async=True), **var_params)
-            labels = Variable(labels.cuda(async=True), **var_params)
+            data = data.cuda()
+            labels = labels.cuda()
+
+            # data = Variable(data.cuda(async=True), **var_params)
+            # labels = Variable(labels.cuda(async=True), **var_params)
 
             # get model outputs
             preds = model(data)
@@ -44,7 +47,7 @@ class EEG:
             optimizer.step()
 
             # TODO: compute accuracy
-            score = 100
+            score = score = int(self.evaluate(predicted=preds, Y=labels))
 
             # update tqdm
             tq.set_description(desc='Loss: {}, Accuracy: {}'.format(loss, score))
@@ -72,7 +75,7 @@ class EEG:
                 loss = F.nll_loss(preds, labels)
 
                 # TODO: compute accuracy
-                score = 10
+                score = int(self.evaluate(predicted=preds, Y=labels))
 
                 # update tqdm
                 tq.set_description(desc='Loss: {}, Accuracy: {}'.format(loss, score))
@@ -81,26 +84,9 @@ class EEG:
                 writer.add_scalar('/loss', loss.data.item(), self.val_iters)
 
 
-    def evaluate(self, model, X, Y, params = ["acc"]):
+    def evaluate(self, predicted, Y, params = ["acc"]):
+        
         results = []
-        batch_size = config.BATCH_SIZE
-        
-        predicted = []
-        
-        for i in range(len(X)/batch_size):
-            s = i*batch_size
-            e = i*batch_size+batch_size
-            
-            inputs = Variable(torch.from_numpy(X[s:e]).cuda(0))
-            pred = model(inputs)
-            
-            predicted.append(pred.data.cpu().numpy())
-            
-            
-        inputs = Variable(torch.from_numpy(X).cuda(0))
-        predicted = model(inputs)
-        
-        predicted = predicted.data.cpu().numpy()
         
         for param in params:
             if param == 'acc':
@@ -115,4 +101,5 @@ class EEG:
                 precision = precision_score(Y, np.round(predicted))
                 recall = recall_score(Y, np.round(predicted))
                 results.append(2*precision*recall/ (precision+recall))
+
         return results

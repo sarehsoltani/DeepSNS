@@ -9,7 +9,7 @@ class EEGNet(nn.Module):
         self.T = 120
         
         # Layer 1
-        self.conv1 = nn.Conv2d(1, 22, (1, 64), padding = 0)
+        self.conv1 = nn.Conv2d(1, 16, (1, 64), padding = 0)
         self.batchnorm1 = nn.BatchNorm2d(16, False)
         
         # Layer 2
@@ -32,9 +32,9 @@ class EEGNet(nn.Module):
 
     def forward(self, x):
         
-        # reshape
-        width = int(math.sqrt(config.BATCH_SIZE))
-        x = x.view(22, 1, width, width)
+        # # reshape
+        # width = int(math.sqrt(config.BATCH_SIZE))
+        # x = x.view(22, 1, width, width)
 
         # Layer 1
         x = F.elu(self.conv1(x))
