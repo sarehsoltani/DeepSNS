@@ -77,16 +77,21 @@ class EEG:
             lsss = []
 
             tq = tqdm(data_loader, desc='{} E{}'.format('Validation', str(epoch)))
+
             for step, (data, labels) in enumerate(tq):
-                
+
                 # update train iters
                 self.val_iters += 1
+
+                # transfer data to device
+                data = data.cuda()
+                labels = labels.cuda()
 
                 # get model outputs
                 preds = model(data)
 
                 # compute error
-                loss = F.nll_loss(preds, labels)
+                loss = F.binary_cross_entropy_with_logits(preds, labels)
 
                 # TODO: compute accuracy
                 score = float(self.evaluate(predicted=preds, Y=labels)[0])
