@@ -7,7 +7,7 @@ class EEGNet(nn.Module):
         self.T = 120
         
         # Layer 1
-        self.conv1 = nn.Conv2d(1, 16, (1, 64), padding = 0)
+        self.conv1 = nn.Conv2d(1, 22, (1, 64), padding = 0)
         self.batchnorm1 = nn.BatchNorm2d(16, False)
         
         # Layer 2
@@ -29,6 +29,13 @@ class EEGNet(nn.Module):
         
 
     def forward(self, x):
+
+        # reshape input 
+        x_shape = x.size()
+        target_shape = x_shape[0] / 2
+        num_channels = 1
+        x = x.view(x_shape[0], target_shape, num_channels)
+
         # Layer 1
         x = F.elu(self.conv1(x))
         x = self.batchnorm1(x)
