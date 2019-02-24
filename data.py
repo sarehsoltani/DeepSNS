@@ -91,6 +91,9 @@ class EEGDataUtils:
         # convert to one-hot
         recording_ts_oh = EEGDataUtils.one_hot(recording_ts_labeled, ['class_label'])
 
+        # shuffle data
+        recording_ts_oh = recording_ts_oh.sample(frac=1)
+        
         return recording_ts_oh
 
 
