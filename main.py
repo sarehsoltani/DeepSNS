@@ -50,5 +50,5 @@ optimizer = optim.Adam([p for p in net.parameters() if p.requires_grad])
 
 for epoch in range(config.NUM_EPOCHS):
     eeg.train(model=net, data_loader=t_generator, optimizer=optimizer, writer=train_writer, epoch=epoch)
-    eeg.evaluate(model=net, data_loader=v_generator, writer=val_writer, epoch=epoch)
+    eeg.validate(model=net, data_loader=v_generator, writer=val_writer, epoch=epoch)
 
