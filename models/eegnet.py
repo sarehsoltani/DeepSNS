@@ -29,12 +29,12 @@ class EEGNet(nn.Module):
         
 
     def forward(self, x):
-
+        
         # reshape input 
         x_shape = x.size()
-        target_shape = x_shape[0] / 2
+        target_shape = int(x_shape[1] / 2)
         num_channels = 1
-        x = x.view(x_shape[0], target_shape, num_channels)
+        x = x.view(-1, target_shape, target_shape, num_channels)
 
         # Layer 1
         x = F.elu(self.conv1(x))
