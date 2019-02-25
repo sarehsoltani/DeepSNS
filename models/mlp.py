@@ -12,7 +12,7 @@ class MLP(nn.Module):
         # specify a simple multilayer perceptron
         self.layer_1 = nn.Linear(in_features=config.NUM_CLASSIFIER_FEATURES,
                                 out_features=config.NUM_L1_UNITS)
-
+                                
         self.layer_2 = nn.Linear(in_features=config.NUM_L1_UNITS,
                                 out_features=config.NUM_L2_UNITS)
         init.xavier_normal(self.layer_2.weight)

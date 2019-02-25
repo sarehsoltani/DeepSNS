@@ -15,10 +15,11 @@ import config
 import warnings
 warnings.filterwarnings("ignore")
 
-# prepare PyTorch datasets
-recording_ts_labeled = EEGDataUtils.prepare_eeg_csv()
+# prepare EEG dataset
+eeg_ts_labeled = EEGDataUtils.prepare_eeg_csv()
 
-# recording_ts_labeled.to_csv('recording_ts_labeled.csv')
+# Optional: save to CSV
+# eeg_ts_labeled.to_csv('eeg_ts_labeled.csv')
 
 # initial EEG Experiment
 eeg = EEG()
@@ -26,15 +27,15 @@ eeg = EEG()
 # prepare data loaders
 
 # IDs and labels
-partition = EEGDataUtils.prepare_partition(recording_ts_labeled, val_split=0.3)
+partition = EEGDataUtils.prepare_partition(eeg_ts_labeled, val_split=0.3)
 
-all_labels = recording_ts_labeled['class_label']
+all_labels = eeg_ts_labeled['class_label']
 
 # generators
-training_set = EEGData(partition['train'], all_labels, recording_ts_labeled)
+training_set = EEGData(partition['train'], all_labels, eeg_ts_labeled)
 t_generator = data.DataLoader(training_set, batch_size=config.BATCH_SIZE)
 
-validation_set = EEGData(partition['validation'], all_labels, recording_ts_labeled)
+validation_set = EEGData(partition['validation'], all_labels, eeg_ts_labeled)
 v_generator = data.DataLoader(validation_set, batch_size=config.BATCH_SIZE)
 
 # Tensorboard writers
