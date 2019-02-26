@@ -63,7 +63,7 @@ class EEG:
             acc_tracker.append(batch_score)
 
             # update tqdm
-            tq.set_description(desc='Train {} | Loss: {:10.5f}, AUC: {:10.5f} |'.format(epoch, loss_tracker.mean.value, acc_tracker.mean.value))
+            tq.set_description(desc='| Train {} | Loss: {:10.5f}, AUC: {:10.5f} |'.format(epoch, loss_tracker.mean.value, acc_tracker.mean.value))
 
             # write scalar
             writer.add_scalar('/loss', loss_tracker.mean.value, self.train_iters)
@@ -108,7 +108,7 @@ class EEG:
                 acc_tracker.append(batch_score)
 
                 # update tqdm
-                tq.set_description(desc='Val | Loss: {:10.5f}, AUC: {:10.5f} |'.format(epoch, loss_tracker.mean.value, acc_tracker.mean.value))
+                tq.set_description(desc='| Val {} | Loss: {:10.5f}, AUC: {:10.5f} |'.format(epoch, loss_tracker.mean.value, acc_tracker.mean.value))
 
                 # write scalar
                 writer.add_scalar('/loss', acc_tracker.mean.value, self.val_iters)
