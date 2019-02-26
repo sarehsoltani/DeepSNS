@@ -10,8 +10,8 @@ NUM_L2_UNITS = 100
 NUM_CLASSES = 5
 
 # training parameters
-NUM_EPOCHS = 5
-BATCH_SIZE = 1024
+NUM_EPOCHS = 25
+BATCH_SIZE = 512
 
 # path for visualization
 visualization_dir = './visualization'

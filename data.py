@@ -97,7 +97,7 @@ class EEGDataUtils:
         return recording_ts_oh
 
 
-class EEGData(Dataset):
+class EEGMlpData(Dataset):
 
     classes = ['img_lhand', 'img_rhand', 'img_bfeet', 'img_tongue', 'img_none']
 
@@ -111,10 +111,40 @@ class EEGData(Dataset):
         # drop classes
         self.feature_cols = self.recording_ts.drop(self.classes, axis=1)
 
-        # random data for eegnet
-        self.rand_x = np.random.rand(2000, 120, 64).astype('float32')
-        self.rand_y = np.round(np.random.rand(2000).astype('float32')
+    def __len__(self):
+        """
+        Total number of samples
+        """
+        return len(self.recording_ts.index)
 
+    def __getitem__(self, index):
+        """
+        Selects desired sample
+        """
+
+        ID = self.list_ids[index]
+
+        x = torch.tensor(self.feature_cols.loc[ID].to_numpy(), dtype=torch.float32)
+        y = torch.tensor(self.recording_ts.loc[ID][self.classes].to_numpy()).float()
+
+        return x, y
+        
+
+
+class EEGNetData(Dataset):
+
+    classes = ['img_lhand', 'img_rhand', 'img_bfeet', 'img_tongue', 'img_none']
+
+    def __init__(self, prefix):
+
+        if prefix == 'train':
+            num_samples = 20000
+        else:
+            num_samples = 10000
+
+        # random data for eegnet
+        self.rand_x = np.random.rand(num_samples, 1, 120, 64).astype('float32')
+        self.rand_y = np.round(np.random.rand(num_samples).astype('float32'))
 
     def __len__(self):
         """
@@ -127,13 +157,8 @@ class EEGData(Dataset):
         Selects desired sample
         """
 
-        # ID = self.list_ids[index]
-
         x = self.rand_x[index]
         y = self.rand_y[index]
 
-        # x = torch.tensor(self.feature_cols.loc[ID].to_numpy(), dtype=torch.float32)
-        # y = torch.tensor(self.recording_ts.loc[ID][self.classes].to_numpy()).float()
+        return x, np.expand_dims(y, axis=1)
 
-        return x, y 
-        

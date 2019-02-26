@@ -1,5 +1,6 @@
 import torch.nn.functional as F
 import torch
+import torch.nn as nn
 import numpy as np
 from sklearn.metrics import roc_auc_score, precision_score, recall_score, accuracy_score
 from torch.autograd import Variable
@@ -48,7 +49,9 @@ class EEG:
             preds = model(data)
 
             # compute error
-            loss = F.binary_cross_entropy_with_logits(preds, labels)
+            BCE = nn.BCELoss()
+            loss = BCE(preds, labels)
+            # loss = F.binary_cross_entropy_with_logits(preds, labels)
 
             # compute gradients and update model weights
             loss.backward()
@@ -60,7 +63,7 @@ class EEG:
             acc_tracker.append(batch_score)
 
             # update tqdm
-            tq.set_description(desc='| Loss: {}, AUC: {} |'.format(loss_tracker.mean.value, acc_tracker.mean.value))
+            tq.set_description(desc='Train {} | Loss: {:10.5f}, AUC: {:10.5f} |'.format(epoch, loss_tracker.mean.value, acc_tracker.mean.value))
 
             # write scalar
             writer.add_scalar('/loss', loss_tracker.mean.value, self.train_iters)
@@ -105,7 +108,7 @@ class EEG:
                 acc_tracker.append(batch_score)
 
                 # update tqdm
-                tq.set_description(desc='| Loss: {}, AUC: {} |'.format(loss_tracker.mean.value, acc_tracker.mean.value))
+                tq.set_description(desc='Val | Loss: {:10.5f}, AUC: {:10.5f} |'.format(epoch, loss_tracker.mean.value, acc_tracker.mean.value))
 
                 # write scalar
                 writer.add_scalar('/loss', acc_tracker.mean.value, self.val_iters)
