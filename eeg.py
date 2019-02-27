@@ -138,6 +138,6 @@ class EEG:
                     recall = recall_score(Y, np.round(predicted))
                     results.append(2*precision*recall/ (precision+recall))
             except ValueError:
-                results.append(0.5)
+                results.append(default_batch_score)
                 
         return results
