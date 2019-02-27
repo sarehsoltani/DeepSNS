@@ -30,8 +30,7 @@ class MLP(nn.Module):
         x = self.layer_2(x)
         x = F.relu(x)
         x = self.layer_3(x)
-
-        x = F.softmax(x, dim=1)
+        x = F.sigmoid(x)
 
         return x
 

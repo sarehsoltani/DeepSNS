@@ -51,7 +51,6 @@ class EEG:
             # compute error
             BCE = nn.BCELoss()
             loss = BCE(preds, labels)
-            # loss = F.binary_cross_entropy_with_logits(preds, labels)
 
             # compute gradients and update model weights
             loss.backward()
@@ -99,7 +98,8 @@ class EEG:
                 preds = model(data)
 
                 # compute error
-                loss = F.binary_cross_entropy_with_logits(preds, labels)
+                BCE = nn.BCELoss()
+                loss = BCE(preds, labels)
 
                 # TODO: compute accuracy
                 batch_score = float(self.evaluate(predicted=preds, Y=labels, params=["auc"])[0])

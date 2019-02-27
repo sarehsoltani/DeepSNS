@@ -122,7 +122,10 @@ class EEGMlpData(Dataset):
         Selects desired sample
         """
 
-        ID = self.list_ids[index]
+        try:
+            ID = self.list_ids[index]
+        except Exception as ex:
+            ID = 100
 
         x = torch.tensor(self.feature_cols.loc[ID].to_numpy(), dtype=torch.float32)
         y = torch.tensor(self.recording_ts.loc[ID][self.classes].to_numpy()).float()
