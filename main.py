@@ -69,6 +69,8 @@ def initiate_train_and_validation(args):
         eeg.train(model=net, data_loader=t_generator, tracker=tracker, optimizer=optimizer, writer=train_writer, epoch=epoch)
         eeg.validate(model=net, data_loader=v_generator, tracker=tracker, writer=val_writer, epoch=epoch)
 
+    train_writer.close()
+    val_writer.close()
 
 if __name__ == '__main__':
 
