@@ -111,8 +111,8 @@ class EEG:
                 tq.set_description(desc='| Val {} | Loss: {:10.5f}, AUC: {:10.5f} |'.format(epoch, loss_tracker.mean.value, acc_tracker.mean.value))
 
                 # write scalar
-                writer.add_scalar('/loss', acc_tracker.mean.value, self.val_iters)
-                writer.add_scalar('/auc-score', loss_tracker.mean.value, self.val_iters)
+                writer.add_scalar('/loss', loss_tracker.mean.value, self.val_iters)
+                writer.add_scalar('/auc-score', acc_tracker.mean.value, self.val_iters)
 
 
     def evaluate(self, predicted, Y, params = ["auc"]):
