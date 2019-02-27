@@ -141,9 +141,9 @@ class EEGNetData(Dataset):
     def __init__(self, prefix):
 
         if prefix == 'train':
-            num_samples = 20000
+            num_samples = 120000
         else:
-            num_samples = 10000
+            num_samples = 40000
 
         # random data for eegnet
         self.rand_x = np.random.rand(num_samples, 1, 120, 64).astype('float32')
