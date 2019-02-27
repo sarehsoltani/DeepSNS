@@ -120,19 +120,24 @@ class EEG:
         results = []
         predicted = predicted.cpu().detach().numpy()
         Y = Y.cpu().detach().numpy()
+        default_batch_score = 0.4
 
         for param in params:
-            if param == 'acc':
-                results.append(accuracy_score(Y, np.round(predicted)))
-            if param == "auc":
-                results.append(roc_auc_score(Y, predicted))
-            if param == "recall":
-                results.append(recall_score(Y, np.round(predicted)))
-            if param == "precision":
-                results.append(precision_score(Y, np.round(predicted)))
-            if param == "fmeasure":
-                precision = precision_score(Y, np.round(predicted))
-                recall = recall_score(Y, np.round(predicted))
-                results.append(2*precision*recall/ (precision+recall))
+
+            try:
+                if param == 'acc':
+                    results.append(accuracy_score(Y, np.round(predicted)))
+                if param == "auc":
+                    results.append(roc_auc_score(Y, predicted))
+                if param == "recall":
+                    results.append(recall_score(Y, np.round(predicted)))
+                if param == "precision":
+                    results.append(precision_score(Y, np.round(predicted)))
+                if param == "fmeasure":
+                    precision = precision_score(Y, np.round(predicted))
+                    recall = recall_score(Y, np.round(predicted))
+                    results.append(2*precision*recall/ (precision+recall))
+            except ValueError:
+                pass
                 
         return results
