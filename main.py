@@ -36,6 +36,9 @@ def initiate_train_and_validation(args):
         t_generator = data.DataLoader(training_set, batch_size=config.BATCH_SIZE)
         validation_set = EEGNetData(prefix='validation')
         v_generator = data.DataLoader(validation_set, batch_size=config.BATCH_SIZE)
+        # classifier
+        net = nn.DataParallel(EEGNet())
+
     else:
         # MLP Processing
         # IDs and labels
@@ -47,13 +50,12 @@ def initiate_train_and_validation(args):
         t_generator = data.DataLoader(training_set, batch_size=config.BATCH_SIZE)
         validation_set = EEGMlpData(partition['validation'], all_labels, eeg_ts_labeled)
         v_generator = data.DataLoader(validation_set, batch_size=config.BATCH_SIZE)
+        # classifier
+        net = nn.DataParallel(MLP())
 
     # Tensorboard writers
     train_writer = SummaryWriter(config.visualization_dir + '/' + 'train')
     val_writer = SummaryWriter(config.visualization_dir + '/' + 'val')
-
-    # classifier
-    net = nn.DataParallel(EEGNet())
 
     # move model and its buffers to GPU
     net.cuda()
