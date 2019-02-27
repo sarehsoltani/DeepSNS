@@ -51,16 +51,16 @@ class agent:
     def train(self, episodes, alpha, gamma, eps, save=True):
         avg_reward = 0
         for episode in range(1, episodes+1):
-            o = env.reset()
+            o = self.env.reset()
             s = get_state(o)
             t = 0
             is_done = False
             while not is_done:
                 t += 1
                 a = self.eps_greedy_action(eps, s)
-                new_o, r, is_done, info = env.step(a)
+                new_o, r, is_done, info = self.env.step(a)
                 new_s = get_state(new_o)
-                if is_done and t < env._max_episode_steps:
+                if is_done and t < self.env._max_episode_steps:
                     r = -400
                 self.update_q_values(s, a, r, new_s, gamma, alpha)
                 s = new_s
@@ -84,19 +84,19 @@ class agent:
                 print('Q.npy not found. Train the model first!')
         for episode in range(1, episodes +1):
             total_reward = 0
-            o = env.reset()
+            o = self.env.reset()
             s = get_state(o)
             is_done = False
             while not is_done:
                 a = self.greedy_action(s)
-                env.render()
-                new_o, r, is_done, info = env.step(a)
+                self.env.render()
+                new_o, r, is_done, info = self.env.step(a)
                 new_s = get_state(new_o)
                 s = new_s
                 total_reward += r
             print('reward for episodes {0}: {1}'\
                 .format(episode, total_reward))
-        env.close()
+        self.env.close()
 
 env._max_episode_steps = 300
 EPISODES = 2000
