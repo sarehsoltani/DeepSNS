@@ -58,5 +58,5 @@ class EEGNet(nn.Module):
         
         # FC Layer
         x = x.view(-1, 4*2*7)
-        x = F.sigmoid(self.fc1(x))
+        x = F.softmax(self.fc1(x))
         return x
